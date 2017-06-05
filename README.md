@@ -1,11 +1,13 @@
-# r-check README
+# r-vscode-tools README
 
-This extension provides an easy way to run R CMD check on an R package folder open in VSCode.
+This extension extends support for R in [Visual Studio Code](https://code.visualstudio.com/). It adds the following commands in the Quick Open menu:
+- R: Check package
+- R: Install package directory
 
-## Features
-
-The extension adds a command `R: Check package` in the Quick Open menu.
+Find this extension on [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=hkumar6.r-vscode-tools).
 
 
 ## TODO
-1. Add script to install the current package directory
+1. ~~Add script to install the current package directory~~
+2. Functionality to install R packages
+3. Add basic support for rmarkdown
