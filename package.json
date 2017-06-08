@@ -1,8 +1,8 @@
 {
     "name": "r-vscode-tools",
     "displayName": "r-vscode-tools",
-    "description": "An extension to perform R CMD check on packages",
-    "version": "0.0.2",
+    "description": "An extension for simple R tasks",
+    "version": "0.0.3",
     "publisher": "hkumar6",
     "engines": {
         "vscode": "^1.12.0"
@@ -26,12 +26,16 @@
     "main": "./extension",
     "contributes": {
         "commands": [{
-            "command": "extension.checkRpackage",
+            "command": "r-tools.checkRpackage",
             "title": "R: Check package"
         },
         {
-            "command": "extension.installRpackage",
+            "command": "r-tools.installPackageDir",
             "title": "R: Install package directory"
+        },
+        {
+            "command": "r-tools.installPackage",
+            "title": "R: Install selected R package"
         }]
     },
     "scripts": {

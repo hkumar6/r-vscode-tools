@@ -11,3 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Restructure JS code using Promises
 - Display information in the status bar
 - Less information in the output channel
+
+## 0.0.3
+- Add command `R: Install selected R package`
+- Take tarball name from output of R CMD build

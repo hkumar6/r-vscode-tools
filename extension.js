@@ -11,13 +11,13 @@ function activate(context) {
     console.log('Congratulations, your extension "r-vscode-tools" is now active!');
 
     // Command to check R package
-    context.subscriptions.push(vscode.commands.registerCommand('extension.checkRpackage', function () {
+    context.subscriptions.push(vscode.commands.registerCommand('r-tools.checkRpackage', function () {
         // The code you place here will be executed every time your command is executed
         var shell = require('shelljs');
         console.log(vscode.workspace.rootPath);
         shell.cd(vscode.workspace.rootPath);
         var buildCommand = 'R CMD build ' + vscode.workspace.rootPath;
-        var checkCommand = 'R CMD check *.tar.gz';
+        var checkCommand = 'R CMD check ';
         var outputChannel = vscode.window.createOutputChannel("R");
         outputChannel.show();
         outputChannel.append(buildCommand + "\n");
@@ -31,11 +31,12 @@ function activate(context) {
                 } else {
                     outputChannel.append("Done!\n");
                     vscode.window.setStatusBarMessage('Build succeeded!', 2000);
-                    resolve();
+                    resolve(stdout.match('[A-Za-z0-9\._]*\.tar\.gz')[0]);
                 }
             });
         });
-        p1.then(function () {
+        p1.then(function (tarFile) {
+            checkCommand = checkCommand + tarFile;
             outputChannel.append(checkCommand + "\n");
             shell.exec(checkCommand, function (code, stdout, stderr) {
                 if (code) {
@@ -50,13 +51,13 @@ function activate(context) {
     }));
 
     // Command to install an R package directory
-    context.subscriptions.push(vscode.commands.registerCommand('extension.installRpackage', function () {
+    context.subscriptions.push(vscode.commands.registerCommand('r-tools.installPackageDir', function () {
         // The code you place here will be executed every time your command is executed
         var shell = require('shelljs');
         console.log(vscode.workspace.rootPath);
         shell.cd(vscode.workspace.rootPath);
         var buildCommand = 'R CMD build ' + vscode.workspace.rootPath;
-        var installCommand = 'R CMD INSTALL *.tar.gz';
+        var installCommand = 'R CMD INSTALL ';
         var outputChannel = vscode.window.createOutputChannel("R");
         outputChannel.show();
         outputChannel.append(buildCommand + "\n");
@@ -70,11 +71,12 @@ function activate(context) {
                 } else {
                     outputChannel.append("Done!\n");
                     vscode.window.setStatusBarMessage('Build succeeded!', 2000);
-                    resolve();
+                    resolve(stdout.match('[A-Za-z0-9\._]*\.tar\.gz')[0]);
                 }
             });
         });
-        p1.then(function() {
+        p1.then(function(tarFile) {
+            installCommand = installCommand + tarFile;
             outputChannel.append(installCommand + "\n");
             shell.exec(installCommand, function(code, stdout, stderr){
                 if(code) {
@@ -86,6 +88,33 @@ function activate(context) {
                 }
             });
         });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('r-tools.installPackage', function () {
+        var shell = require("shelljs");
+        var selection = vscode.window.activeTextEditor.selection;
+        if(selection.start.line - selection.end.line == 0 
+        && selection.start.character - selection.end.character == 0) {
+            let packageInput = vscode.window.showInputBox();
+            packageInput.then(function(packageName) {
+                console.log(packageName);
+            });
+        } else {
+            var packageName = vscode.window.activeTextEditor.document.getText(selection.with());
+            var outputChannel = vscode.window.createOutputChannel("R");
+            outputChannel.show();
+            var installCommand = 'Rscript -e "install.packages(\'' + packageName + '\', repos=\'https://cloud.r-project.org\')"';
+            outputChannel.append(installCommand + '\n');
+            shell.exec(installCommand, function (code, stdout, stderr) {
+                if (code) {
+                    outputChannel.append(stderr);
+                    outputChannel.append("Failed!");
+                } else {
+                    outputChannel.append("Done!");
+                    vscode.window.setStatusBarMessage(packageName + ' installed successfully!', 5000);
+                }
+            });
+        }
     }));
 }
 exports.activate = activate;
