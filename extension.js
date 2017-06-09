@@ -44,6 +44,10 @@ function activate(context) {
                     outputChannel.append("Failed!");
                 } else {
                     outputChannel.append("Done!");
+                    setTimeout(function () {
+                        outputChannel.hide();
+                        outputChannel.dispose();
+                    }, 2000);
                     vscode.window.setStatusBarMessage('Check succeeded!', 5000);
                 }
             });
@@ -84,6 +88,10 @@ function activate(context) {
                     outputChannel.append("Failed!");
                 } else {
                     outputChannel.append("Done!");
+                    setTimeout(function () {
+                        outputChannel.hide();
+                        outputChannel.dispose();
+                    }, 2000);
                     vscode.window.setStatusBarMessage('Install succeeded!', 5000);
                 }
             });
@@ -93,14 +101,10 @@ function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('r-tools.installPackage', function () {
         var shell = require("shelljs");
         var selection = vscode.window.activeTextEditor.selection;
-        if(selection.start.line - selection.end.line == 0 
-        && selection.start.character - selection.end.character == 0) {
-            let packageInput = vscode.window.showInputBox();
-            packageInput.then(function(packageName) {
-                console.log(packageName);
-            });
-        } else {
-            var packageName = vscode.window.activeTextEditor.document.getText(selection.with());
+        var packageSelection = vscode.window.activeTextEditor.document.getText(selection.with());
+        let packageInput = vscode.window.showInputBox({value: packageSelection});
+        packageInput.then(function (packageName) {
+            console.log(packageName);
             var outputChannel = vscode.window.createOutputChannel("R");
             outputChannel.show();
             var installCommand = 'Rscript -e "install.packages(\'' + packageName + '\', repos=\'https://cloud.r-project.org\')"';
@@ -111,10 +115,14 @@ function activate(context) {
                     outputChannel.append("Failed!");
                 } else {
                     outputChannel.append("Done!");
+                    setTimeout(function () {
+                        outputChannel.hide();
+                        outputChannel.dispose();
+                    }, 2000);
                     vscode.window.setStatusBarMessage(packageName + ' installed successfully!', 5000);
                 }
             });
-        }
+        }); 
     }));
 }
 exports.activate = activate;
